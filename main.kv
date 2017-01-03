@@ -1,0 +1,644 @@
+#:kivy 1.9.1
+
+<MainScreen>:
+    id: main_screen
+    passcode_popup: passcode_popup.__self__
+    logout_button: logout_button.__self__
+    reset_timer_popup: reset_timer_popup.__self__
+    fuel_change_popup: fuel_change_popup.__self__
+    #graph_popup: graph_popup.__self__
+    logged_in: app.logged_in
+
+    Button:
+        id: logout_button
+        size_hint: None, None
+        height: (main_tabbed_panel.tab_height / 1.5) + 2
+        width: 90
+        pos: main_tabbed_panel.width - self.width - 280, main_tabbed_panel.height - self.height - 9
+        text: 'Logout'
+        markup: 'true'
+        font_size: '15sp'
+        color: 1, 1, 0, 1
+        on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+        on_release: main_tabbed_panel.switch_to(main); app.logged_in = 0; self.parent.remove_widget(self)
+
+    Button:
+        size_hint: None, None
+        height: main_tabbed_panel.tab_height + 2
+        width: 125
+        pos: main_tabbed_panel.width - self.width - 130, main_tabbed_panel.height - self.height - 2
+        text: 'STOP'
+        markup: 'true'
+        font_size: '20sp'
+        color: 1, 0.1, 0.1, 1
+        on_press: app.rio_data.set('momentary_button/stop/', 'Null')
+
+    LabelStatus:
+        size_hint: None, None
+        height: main_tabbed_panel.tab_height
+        width: 125
+        pos: main_tabbed_panel.width - self.width - 2, main_tabbed_panel.height - self.height - 2
+        font_size: '17sp'
+        bstate: app.rio_data.system_status
+
+    TabbedPanel:
+        id: main_tabbed_panel
+        size_hint: 1, 1
+        do_default_tab: False
+        on_children: main_tabbed_panel.switch_to(main)
+
+        TabbedPanelItem:
+            text: 'Main'
+            id: main
+
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 10
+                spacing: 10
+
+                BoxLayout:
+                    size_hint: 1, .2
+                    orientation: 'horizontal'
+
+                    BoxLayout:
+                        orientation: 'vertical'
+
+                        HeaderLabel:
+                            text: app.rio_data.header_line_1
+                        HeaderLabel:
+                            text: app.rio_data.header_line_2
+                        HeaderLabel:
+                            text: app.rio_data.header_line_3
+
+                    BoxLayout:
+                        orientation: 'vertical'
+
+                        HeaderLabel:
+                            text: 'Power Supply: ' + app.rio_data.power_supply
+                            halign: 'right'
+                        HeaderLabel:
+                            text: 'Temp 1: ' + app.rio_data.temp_1
+                            halign: 'right'
+                        HeaderLabel:
+                            text: 'Temp 2: ' + app.rio_data.temp_2
+                            halign: 'right'
+
+                PumpStateLayout:
+                    size_hint: 1, .10
+
+                GridLayout:
+                    id: pump_data_layout
+                    size_hint: 1, .70
+                    cols: 6
+                    rows: 7
+                    PumpData:
+                        description: 'Pump Speed 1'
+                        text: app.rio_data.speed_1
+                        main_ref: root
+                        #graph_popup: root
+                        #graph: graph
+                    PumpData:
+                        text: app.rio_data.speed_2
+                    PumpData:
+                        text: app.rio_data.speed_3
+                    PumpData:
+                        text: app.rio_data.speed_4
+                    PumpData:
+                        text: app.rio_data.speed_5
+                    PumpData:
+                        text: app.rio_data.speed_6
+                    PumpData:
+                        text: app.rio_data.pressure_1
+                    PumpData:
+                        text: app.rio_data.pressure_2
+                    PumpData:
+                        text: app.rio_data.pressure_3
+                    PumpData:
+                        text: app.rio_data.pressure_4
+                    PumpData:
+                        text: app.rio_data.pressure_5
+                    PumpData:
+                        text: app.rio_data.pressure_6
+                    PumpData:
+                        text: app.rio_data.flow_1
+                    PumpData:
+                        text: app.rio_data.flow_2
+                    PumpData:
+                        text: app.rio_data.flow_3
+                    PumpData:
+                        text: app.rio_data.flow_4
+                    PumpData:
+                        text: app.rio_data.flow_5
+                    PumpData:
+                        text: app.rio_data.flow_6
+                    PumpData:
+                        text: app.rio_data.current_1
+                    PumpData:
+                        text: app.rio_data.current_2
+                    PumpData:
+                        text: app.rio_data.current_3
+                    PumpData:
+                        text: app.rio_data.current_4
+                    PumpData:
+                        text: app.rio_data.current_5
+                    PumpData:
+                        text: app.rio_data.current_6
+                    PumpData:
+                        text: app.rio_data.ph_current_1
+                    PumpData:
+                        text: app.rio_data.ph_current_2
+                    PumpData:
+                        text: app.rio_data.ph_current_3
+                    PumpData:
+                        text: app.rio_data.ph_current_4
+                    PumpData:
+                        text: app.rio_data.ph_current_5
+                    PumpData:
+                        text: app.rio_data.ph_current_6
+                    PumpData:
+                        text: app.rio_data.voltage_1
+                    PumpData:
+                        text: app.rio_data.voltage_2
+                    PumpData:
+                        text: app.rio_data.voltage_3
+                    PumpData:
+                        text: app.rio_data.voltage_4
+                    PumpData:
+                        text: app.rio_data.voltage_5
+                    PumpData:
+                        text: app.rio_data.voltage_6
+                    PumpData:
+                        text: app.rio_data.time_1
+                    PumpData:
+                        text: app.rio_data.time_2
+                    PumpData:
+                        text: app.rio_data.time_3
+                    PumpData:
+                        text: app.rio_data.time_4
+                    PumpData:
+                        text: app.rio_data.time_5
+                    PumpData:
+                        text: app.rio_data.time_6
+
+        TabbedPanelItem:
+            text: 'Test Ctrl'
+            id: test_ctrl
+
+            GridLayout:
+                rows: 1
+                cols: 3
+                spacing: 30
+
+                GridLayout:
+                    id: start_test_layout
+                    rows: 4
+                    cols: 1
+                    padding: 60, 60, 12, 0
+                    spacing: 25
+
+                    ToggleButton:
+                        text: 'Start Test'
+                        size_hint: None, None
+                        width: 150
+                        height: 75
+                        font_size: '18sp'
+                        on_state: app.rio_data.set('toggle_button/start_test/', self.state)
+                        state: 'down' if app.rio_data.system_status == '2' else 'normal'
+
+                    Button:
+                        text: 'Reset Timers'
+                        size_hint: None, None
+                        width: 150
+                        height: 75
+                        font_size: '18sp'
+                        on_release: reset_timer_popup.open()
+
+                    Popup:
+                        id: reset_timer_popup
+                        title: "Reset Timers"
+                        size_hint: None, None
+                        size: 300, 300
+                        on_parent:
+                            if self.parent == start_test_layout: self.parent.remove_widget(self)
+
+                        BoxLayout:
+                            orientation: 'vertical'
+
+                            Label:
+                                text: 'Are you sure you want to reset all of the pump timers?'
+                                size_hint: 1, .8
+                                text_size: self.width, None
+                                height: self.texture_size[1]
+                                font_size: '18sp'
+
+                            GridLayout:
+                                rows: 1
+                                cols: 2
+                                size_hint: 1, .2
+
+                                Button:
+                                    text: 'Yes'
+                                    on_release: reset_timer_popup.dismiss(); app.rio_data.set('momentary_button/reset_timers/', 'Null')
+
+                                Button:
+                                    text: 'Cancel'
+                                    on_release: reset_timer_popup.dismiss()
+
+                    Button:
+                        text: 'Log Fuel\nChange'
+                        size_hint: None, None
+                        width: 150
+                        height: 75
+                        font_size: '18sp'
+                        on_release: fuel_change_popup.open()
+
+                    Popup:
+                        id: fuel_change_popup
+                        title: "Fuel Change"
+                        size_hint: None, None
+                        size: 300, 300
+                        on_parent:
+                            if self.parent == start_test_layout: self.parent.remove_widget(self)
+
+                        BoxLayout:
+                            orientation: 'vertical'
+
+                            Label:
+                                text: 'Fuel change has been logged.'
+                                size_hint: 1, .8
+                                font_size: '18sp'
+
+                            Button:
+                                text: 'Ok'
+                                size_hint: 1, .2
+                                on_release: fuel_change_popup.dismiss(); app.rio_data.set('momentary_button/log_fuel_change/', 'Null')
+
+                BoxLayout:
+
+                BoxLayout:
+
+        TabbedPanelItem:
+            text: 'Pump Ctrl'
+            id: pump_ctrl
+            disabled: True if app.rio_data.system_status == '2' else False
+
+            BoxLayout:
+                orientation: 'vertical'
+                padding: 4
+                spacing: 4
+
+                PumpDataLayoutShort:
+                    size_hint: 1, .20
+
+                GridLayout:
+                    cols: 6
+                    rows: 1
+                    size_hint: 1, .45
+
+                    PumpCmdSlider:
+                        id: pump_slider_1
+                        pump_cmd: app.rio_data.pump_cmd_1
+                        index: 0
+                    PumpCmdSlider:
+                        id: pump_slider_2
+                        pump_cmd: app.rio_data.pump_cmd_2
+                        index: 1
+                    PumpCmdSlider:
+                        id: pump_slider_3
+                        pump_cmd: app.rio_data.pump_cmd_3
+                        index: 2
+                    PumpCmdSlider:
+                        id: pump_slider_4
+                        pump_cmd: app.rio_data.pump_cmd_4
+                        index: 3
+                    PumpCmdSlider:
+                        id: pump_slider_5
+                        pump_cmd: app.rio_data.pump_cmd_5
+                        index: 4
+                    PumpCmdSlider:
+                        id: pump_slider_6
+                        pump_cmd: app.rio_data.pump_cmd_6
+                        index: 5
+
+                GridLayout:
+                    cols: 6
+                    rows: 1
+                    size_hint: 1, .05
+
+                    PumpData:
+                        text: app.rio_data.pump_cmd_1
+                    PumpData:
+                        text: app.rio_data.pump_cmd_2
+                    PumpData:
+                        text: app.rio_data.pump_cmd_3
+                    PumpData:
+                        text: app.rio_data.pump_cmd_4
+                    PumpData:
+                        text: app.rio_data.pump_cmd_5
+                    PumpData:
+                        text: app.rio_data.pump_cmd_6
+
+                GridLayout:
+                    rows: 1
+                    cols: 6
+                    size_hint: 1, .15
+
+                    PumpCmdButtons:
+                        index: 0
+                        slider_ref: pump_slider_1
+                        pump_cmd: app.rio_data.pump_cmd_1
+                    PumpCmdButtons:
+                        index: 1
+                        slider_ref: pump_slider_2
+                        pump_cmd: app.rio_data.pump_cmd_2
+                    PumpCmdButtons:
+                        index: 2
+                        slider_ref: pump_slider_3
+                        pump_cmd: app.rio_data.pump_cmd_3
+                    PumpCmdButtons:
+                        index: 3
+                        slider_ref: pump_slider_4
+                        pump_cmd: app.rio_data.pump_cmd_4
+                    PumpCmdButtons:
+                        index: 4
+                        slider_ref: pump_slider_5
+                        pump_cmd: app.rio_data.pump_cmd_5
+                    PumpCmdButtons:
+                        index: 5
+                        slider_ref: pump_slider_6
+                        pump_cmd: app.rio_data.pump_cmd_6
+
+                GridLayout:
+                    rows: 1
+                    cols: 6
+                    size_hint: 1, .15
+
+                    PumpToggle:
+                        index: 0
+                        state: 'down' if app.rio_data.pump_state_1 == '1' else 'normal'
+                    PumpToggle:
+                        index: 1
+                        state: 'down' if app.rio_data.pump_state_2 == '1' else 'normal'
+                    PumpToggle:
+                        index: 2
+                        state: 'down' if app.rio_data.pump_state_3 == '1' else 'normal'
+                    PumpToggle:
+                        index: 3
+                        state: 'down' if app.rio_data.pump_state_4 == '1' else 'normal'
+                    PumpToggle:
+                        index: 4
+                        state: 'down' if app.rio_data.pump_state_5 == '1' else 'normal'
+                    PumpToggle:
+                        index: 5
+                        state: 'down' if app.rio_data.pump_state_6 == '1' else 'normal'
+
+        TabbedPanelItem:
+            text: 'Tank Ctrl'
+            id: tank_ctrl
+            disabled: True if app.rio_data.system_status == '2' else False
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                GridLayout:
+                    rows: 1
+                    cols: 3
+                    size_hint: 1, 0.75
+                    padding: 0, 0, 45, 0
+                    spacing: 30
+
+                    TankControl:
+                        id: ps_control
+                        header: 'PS Control (V)'
+                        actual: app.rio_data.power_supply
+                        slider_min: 0
+                        slider_max: 14.5
+                        slider_inc: 0.5
+                        cmd_type: 'ps'
+                        tank_cmd: app.rio_data.ps_cmd
+                        button_inc: 0.1
+
+                    TankControl:
+                        header: 'Pressure Ctrl (kPa)'
+                        actual: ''
+                        slider_min: 0
+                        slider_max: 800
+                        slider_inc: 10
+                        cmd_type: 'pressure'
+                        tank_cmd: app.rio_data.pressure_cmd
+                        button_inc: 1
+
+                    TankControl:
+                        header: 'Temp Control (deg C)'
+                        actual: app.rio_data.temp_1
+                        slider_min: -40
+                        slider_max: 100
+                        slider_inc: 1
+                        cmd_type: 'temp'
+                        tank_cmd: app.rio_data.temp_cmd
+                        button_inc: 1
+
+                GridLayout:
+                    rows: 1
+                    cols: 3
+                    size_hint: 1, 0.25
+                    padding: 0, 0, 0, 0
+                    spacing: 30
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        padding: 0, 0, 12, 0
+
+                        #Label:
+                            #text: 'PS Enable:'
+                            #text_size: self.size
+                            #halign: 'right'
+                            #valign: 'middle'
+
+                        #Switch:
+                            #active: int(app.rio_data.ps_enable) if app.rio_data.ps_enable != '' else 0
+                            #size_hint_x: None
+                            #width: 100
+                            #on_active: app.rio_data.set('toggle_button/ps_enable/' + str(int(self.active)) + '/', 'Null')
+
+                    BoxLayout:
+
+                    BoxLayout:
+
+
+
+
+    Popup:
+        id: passcode_popup
+        title: "Enter passcode"
+        size_hint: None, None
+        size: 400, 450
+        on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+
+        GridLayout:
+            rows: 4
+            cols: 3
+            padding: 20
+
+            Button:
+                text: '7'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '8'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '9'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '4'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '5'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '6'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '1'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '2'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '3'
+                on_release: app.try_passcode(self.text)
+            Button:
+                text: '0'
+                on_release: app.try_passcode(self.text)
+
+<GraphPopup>:
+    id: graph_popup
+    title: 'Graph'
+    #on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+
+    FloatLayout:
+        orientation: 'vertical'
+
+        TestGraph:
+            id: graph
+            graph_data: app.rio_data.voltage_1
+            time: app.rio_data.time
+            xlabel: 'Time (sec)'
+            ylabel: 'Y'
+            x_ticks_minor: 1
+            x_ticks_major: 1
+            y_ticks_major: 5
+            y_grid_label: True
+            x_grid_label: True
+            padding: 8
+            x_grid: True
+            y_grid: True
+            xmin: 0
+            xmax: 10
+            ymin: -15
+            ymax: 15
+            precision: '%.1f'
+
+        Button:
+            id: close_graph_popup
+            text: 'X'
+            size_hint: None, None
+            size: 35, 35
+            pos: graph_popup.width - close_graph_popup.width - 10, graph_popup.height - close_graph_popup.height - 8
+            text_size: self.size
+            font_size: '18sp'
+            halign: 'center'
+            valign: 'middle'
+            on_press: graph_popup.dismiss()
+
+<PumpData@Label>:
+    font_size: '20sp'
+    markup: 'True'
+
+<HeaderLabel@Label>:
+    markup: 'True'
+    text_size: self.size
+    font_size: '18sp'
+    halign: 'left'
+    valign: 'middle'
+
+<PumpState@LabelB>:
+    font_size: '18sp'
+    markup: 'True'
+    #bcolor_on: 0.19, 0.64, 0.8, 1
+    bcolor_on: 0.03, 0.55, 0.07, 1
+    bcolor_off: 0.34, 0.34, 0.34, 1
+
+<PumpDataLayoutShort@GridLayout>:
+    cols: 6
+    rows: 4
+    PumpData:
+        text: app.rio_data.speed_1
+    PumpData:
+        text: app.rio_data.speed_2
+    PumpData:
+        text: app.rio_data.speed_3
+    PumpData:
+        text: app.rio_data.speed_4
+    PumpData:
+        text: app.rio_data.speed_5
+    PumpData:
+        text: app.rio_data.speed_6
+    PumpData:
+        text: app.rio_data.pressure_1
+    PumpData:
+        text: app.rio_data.pressure_2
+    PumpData:
+        text: app.rio_data.pressure_3
+    PumpData:
+        text: app.rio_data.pressure_4
+    PumpData:
+        text: app.rio_data.pressure_5
+    PumpData:
+        text: app.rio_data.pressure_6
+    PumpData:
+        text: app.rio_data.flow_1
+    PumpData:
+        text: app.rio_data.flow_2
+    PumpData:
+        text: app.rio_data.flow_3
+    PumpData:
+        text: app.rio_data.flow_4
+    PumpData:
+        text: app.rio_data.flow_5
+    PumpData:
+        text: app.rio_data.flow_6
+    PumpData:
+        text: app.rio_data.current_1
+    PumpData:
+        text: app.rio_data.current_2
+    PumpData:
+        text: app.rio_data.current_3
+    PumpData:
+        text: app.rio_data.current_4
+    PumpData:
+        text: app.rio_data.current_5
+    PumpData:
+        text: app.rio_data.current_6
+
+<PumpStateLayout@GridLayout>:
+    rows: 1
+    PumpState:
+        text: 'Pump 1'
+        bstate: app.rio_data.pump_state_1
+    PumpState:
+        text: 'Pump 2'
+        bstate: app.rio_data.pump_state_2
+    PumpState:
+        text: 'Pump 3'
+        bstate: app.rio_data.pump_state_3
+    PumpState:
+        text: 'Pump 4'
+        bstate: app.rio_data.pump_state_4
+    PumpState:
+        text: 'Pump 5'
+        bstate: app.rio_data.pump_state_5
+    PumpState:
+        text: 'Pump 6'
+        bstate: app.rio_data.pump_state_6
+
