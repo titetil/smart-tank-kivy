@@ -9,10 +9,10 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import StringProperty, NumericProperty
 from kivy.config import Config
 from math import sin
-#from kivy.garden.graph import Graph, MeshLinePlot
+from kivy.garden.graph import Graph, MeshLinePlot
 
 from kivy.core.window import Window
 
@@ -23,14 +23,14 @@ import serial
 import labelB, labelStatus, pumpCmdButtons, pumpCmdSlider, pumpToggle, tankControl
 import collections
 
-debug_mode = 1
+debug_mode = 0
 
 class MainScreen(FloatLayout):
     logged_in = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        #self.graph_popup = GraphPopup()
+        self.graph_popup = GraphPopup()
 
     def on_touch_down(self, touch):
         #passcode pop-up if area of tab headers are touched (other than 'Main'), and not logged in
@@ -42,36 +42,20 @@ class MainScreen(FloatLayout):
         #self.graph_popup = GraphPopup()
 
 
-'''class PumpData(Label):
-    main_ref = ObjectProperty(None)
-    graph_popup = ObjectProperty(None)
-    graph = ObjectProperty(None)
-    time = NumericProperty(0)
-
+class PumpData(Label):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.graph_popup.title = self.description
-            #graph = TestGraph(ylabel = self.text.split(' ')[1], label_ref = self)
-            #graph.bind(graph_data = self.setter('text'))
-            #graph.bind(time = self.setter('time'))
-            #self.graph_layout.add_widget(graph)
-
-            self.graph_popup.open()
-            #self.graph.bind_time()
+            self.main_ref.graph_popup.title = self.description
+            self.graph.ylabel = self.text.split(' ')[1]
+            self.main_ref.graph_popup.open()
         return super(PumpData, self).on_touch_down(touch)
 
 class GraphPopup(Popup):
-    graph = ObjectProperty(None)
-
-    def __init__(self, **kwargs):
-        super(GraphPopup, self).__init__(**kwargs)
-        self.graph.bind_time()
+    pass
 
 class TestGraph(Graph):
     graph_data = StringProperty('0')
-    time = NumericProperty(0)
-    label_ref = ObjectProperty(None)
-    app_ref = ObjectProperty(None)
+    time = NumericProperty(0.0)
 
     def __init__(self, **kwargs):
         super(TestGraph, self).__init__(**kwargs)
@@ -81,11 +65,7 @@ class TestGraph(Graph):
         self.buffer_x = collections.deque(maxlen=100)
         self.buffer_y = collections.deque(maxlen=100)
 
-    def bind_time(self):
-        self.bind(time=self.app_ref.rio_data.setter('time'))
-
     def on_time(self, instance, value):
-        print('test')
         self.buffer_x.append(float("{0:.1f}".format(value))) #this formatting removes jitter from the graph
         self.buffer_y.append(float(self.graph_data.split(" ")[0]) * 10)
         self.plot.points = [(self.buffer_x[i], self.buffer_y[i]) for i in range(len(self.buffer_x))]
@@ -99,10 +79,10 @@ class TestGraph(Graph):
             if self._ymax != self._ymin:
                 self.ymin = self._ymin - 1
                 self.ymax = self._ymax + 1
-                self.y_ticks_major = (self.ymax - self.ymin) / 5'''
+                self.y_ticks_major = (self.ymax - self.ymin) / 5
 
 class MainApp(App):
-    passcode = '1234'
+    passcode = '0'
     passcode_try = ''
     logged_in = NumericProperty(0)
 
@@ -306,7 +286,7 @@ if __name__ == '__main__':
 
     if debug_mode == 0:
         try:
-            ser = serial.Serial('/dev/ttyUSB0', 115200)
+            ser = serial.Serial('COM3', 115200)
         except:
             print "Failed to connect"
             exit()
