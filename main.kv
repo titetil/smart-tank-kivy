@@ -7,6 +7,7 @@
     reset_timer_popup: reset_timer_popup.__self__
     fuel_change_popup: fuel_change_popup.__self__
     #graph_popup: graph_popup.__self__
+    #graph: graph.__self__
     logged_in: app.logged_in
 
     Button:
@@ -92,10 +93,10 @@
                     cols: 6
                     rows: 7
                     PumpData:
-                        description: 'Pump Speed 1'
+                        #description: 'Pump Speed 1'
                         text: app.rio_data.speed_1
-                        main_ref: root
-                        #graph_popup: root
+                        #time: app.rio_data.time
+                        #graph_popup: graph_popup
                         #graph: graph
                     PumpData:
                         text: app.rio_data.speed_2
@@ -465,9 +466,6 @@
 
                     BoxLayout:
 
-
-
-
     Popup:
         id: passcode_popup
         title: "Enter passcode"
@@ -511,45 +509,50 @@
                 text: '0'
                 on_release: app.try_passcode(self.text)
 
-<GraphPopup>:
-    id: graph_popup
-    title: 'Graph'
-    #on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+    #GraphPopup:
+    #    id: graph_popup
+     #   graph: graph
+      #  title: 'Graph'
+       # on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+#
+ #       FloatLayout:
+  #          id: graph_layout
+   #         orientation: 'vertical'
+#
+ #           TestGraph:
+  #              id: graph
+   #             graph_data: app.rio_data.voltage_1
+                #time: app.rio_data.time
+    #            app_ref: app
+     #           xlabel: 'Time (sec)'
+      #          ylabel: 'Y'
+       #         x_ticks_minor: 1
+        #        x_ticks_major: 1
+         #       y_ticks_major: 5
+          #      y_grid_label: True
+           #     x_grid_label: True
+            #    padding: 8
+             #   x_grid: True
+     #           y_grid: True
+      #          xmin: 0
+       #         xmax: 10
+        #        ymin: -15
+         #       ymax: 15
+          #      precision: '%.1f'
 
-    FloatLayout:
-        orientation: 'vertical'
+     #       Button:
+      #          id: close_graph_popup
+       #         text: 'X'
+        #        size_hint: None, None
+         #       size: 35, 35
+          #      pos: graph_popup.width - close_graph_popup.width - 10, graph_popup.height - close_graph_popup.height - 8
+           #     text_size: self.size
+      #          font_size: '18sp'
+       #         halign: 'center'
+        #        valign: 'middle'
+         #       on_press: graph_popup.dismiss()
 
-        TestGraph:
-            id: graph
-            graph_data: app.rio_data.voltage_1
-            time: app.rio_data.time
-            xlabel: 'Time (sec)'
-            ylabel: 'Y'
-            x_ticks_minor: 1
-            x_ticks_major: 1
-            y_ticks_major: 5
-            y_grid_label: True
-            x_grid_label: True
-            padding: 8
-            x_grid: True
-            y_grid: True
-            xmin: 0
-            xmax: 10
-            ymin: -15
-            ymax: 15
-            precision: '%.1f'
 
-        Button:
-            id: close_graph_popup
-            text: 'X'
-            size_hint: None, None
-            size: 35, 35
-            pos: graph_popup.width - close_graph_popup.width - 10, graph_popup.height - close_graph_popup.height - 8
-            text_size: self.size
-            font_size: '18sp'
-            halign: 'center'
-            valign: 'middle'
-            on_press: graph_popup.dismiss()
 
 <PumpData@Label>:
     font_size: '20sp'
