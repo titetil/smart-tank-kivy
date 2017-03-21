@@ -12,7 +12,7 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty
 from kivy.config import Config
 from math import sin
-from kivy.garden.graph import Graph, MeshLinePlot
+#from kivy.garden.graph import Graph, MeshLinePlot
 
 from kivy.core.window import Window
 
@@ -30,7 +30,7 @@ class MainScreen(FloatLayout):
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        self.graph_popup = GraphPopup()
+        #self.graph_popup = GraphPopup()
 
     def on_touch_down(self, touch):
         #passcode pop-up if area of tab headers are touched (other than 'Main'), and not logged in
@@ -42,7 +42,7 @@ class MainScreen(FloatLayout):
         #self.graph_popup = GraphPopup()
 
 
-class PumpData(Label):
+'''class PumpData(Label):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.main_ref.graph_popup.title = self.description
@@ -79,10 +79,10 @@ class TestGraph(Graph):
             if self._ymax != self._ymin:
                 self.ymin = self._ymin - 1
                 self.ymax = self._ymax + 1
-                self.y_ticks_major = (self.ymax - self.ymin) / 5
+                self.y_ticks_major = (self.ymax - self.ymin) / 5'''
 
 class MainApp(App):
-    passcode = '0'
+    passcode = '1234'
     passcode_try = ''
     logged_in = NumericProperty(0)
 
@@ -172,7 +172,8 @@ class RIOData(Widget):
     system_status = StringProperty('0')
     ps_cmd = StringProperty('0')
     pressure_cmd = StringProperty('0')
-    temp_cmd = StringProperty('0')
+    temp_cmd_1 = StringProperty('0')
+    temp_cmd_2 = StringProperty('0')
     ps_enable = StringProperty('0')
     tog_button_spare_1 = StringProperty('0')
     tog_button_spare_2 = StringProperty('0')
@@ -181,10 +182,11 @@ class RIOData(Widget):
     tog_button_spare_5 = StringProperty('0')
     pump_cmd_max = StringProperty('0')
     pump_cmd_inc = StringProperty('0')
+    avg_pressure = StringProperty('0')
 
     def __init__(self, **kwargs):
         super(RIOData, self).__init__(**kwargs)
-        self.array_size = 73
+        self.array_size = 75
         self.pump_data_array = ['0']*self.array_size
         Clock.schedule_interval(self.update_data, 0)
 
@@ -192,7 +194,7 @@ class RIOData(Widget):
         if debug_mode == 0:
             try:
                 self.pump_data_array = ser.readline().rstrip().split(',')
-                self.time = Clock.get_time()
+                #self.time = Clock.get_time()
             except:
                 print('Serial Read Failure')
                 exit()
@@ -262,15 +264,17 @@ class RIOData(Widget):
             self.system_status = self.pump_data_array[60]
             self.ps_cmd = self.pump_data_array[61]
             self.pressure_cmd = self.pump_data_array[62]
-            self.temp_cmd = self.pump_data_array[63]
-            self.ps_enable = self.pump_data_array[64]
-            self.tog_button_spare_1 = self.pump_data_array[65]
-            self.tog_button_spare_2 = self.pump_data_array[66]
-            self.tog_button_spare_3 = self.pump_data_array[67]
-            self.tog_button_spare_4 = self.pump_data_array[68]
-            self.tog_button_spare_5 = self.pump_data_array[69]
-            self.pump_cmd_max = self.pump_data_array[70]
-            self.pump_cmd_inc = self.pump_data_array[71]
+            self.temp_cmd_1 = self.pump_data_array[63]
+            self.temp_cmd_2 = self.pump_data_array[64]
+            self.ps_enable = self.pump_data_array[65]
+            self.tog_button_spare_1 = self.pump_data_array[66]
+            self.tog_button_spare_2 = self.pump_data_array[67]
+            self.tog_button_spare_3 = self.pump_data_array[68]
+            self.tog_button_spare_4 = self.pump_data_array[69]
+            self.tog_button_spare_5 = self.pump_data_array[70]
+            self.pump_cmd_max = self.pump_data_array[71]
+            self.pump_cmd_inc = self.pump_data_array[72]
+            self.avg_pressure = self.pump_data_array[73]
 
     def get(self, index):
         return self.pump_data_array[index]
@@ -286,7 +290,8 @@ if __name__ == '__main__':
 
     if debug_mode == 0:
         try:
-            ser = serial.Serial('COM3', 115200)
+            #ser = serial.Serial('COM3', 115200)
+            ser = serial.Serial('/dev/ttyUSB0', 115200)
         except:
             print "Failed to connect"
             exit()

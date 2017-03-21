@@ -402,10 +402,10 @@
 
                 GridLayout:
                     rows: 1
-                    cols: 4
-                    size_hint: 1, 1
-                    padding: 0, 15, 25, 0
-                    spacing: 20
+                    cols: 3
+                    size_hint: 1, 0.75
+                    padding: 0, 0, 45, 0
+                    spacing: 30
 
                     TankControl:
                         id: ps_control
@@ -419,8 +419,8 @@
                         button_inc: 0.1
 
                     TankControl:
-                        header: 'Press Ctrl (kPa)'
-                        actual: app.rio_data.avg_pressure
+                        header: 'Pressure Ctrl (kPa)'
+                        actual: ''
                         slider_min: 0
                         slider_max: 800
                         slider_inc: 10
@@ -429,23 +429,13 @@
                         button_inc: 1
 
                     TankControl:
-                        header: 'Temp 1 (deg C)'
+                        header: 'Temp Control (deg C)'
                         actual: app.rio_data.temp_1
                         slider_min: -40
                         slider_max: 100
                         slider_inc: 1
-                        cmd_type: 'temp_1'
-                        tank_cmd: app.rio_data.temp_cmd_1
-                        button_inc: 1
-
-                    TankControl:
-                        header: 'Temp 2 (deg C)'
-                        actual: app.rio_data.temp_2
-                        slider_min: -40
-                        slider_max: 100
-                        slider_inc: 1
-                        cmd_type: 'temp_2'
-                        tank_cmd: app.rio_data.temp_cmd_2
+                        cmd_type: 'temp'
+                        tank_cmd: app.rio_data.temp_cmd
                         button_inc: 1
 
                 GridLayout:
@@ -521,6 +511,45 @@
                 text: '0'
                 on_release: app.try_passcode(self.text)
 
+<GraphPopup>:
+    id: graph_popup
+    title: 'Graph'
+    #on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+
+    FloatLayout:
+        orientation: 'vertical'
+
+        TestGraph:
+            id: graph
+            graph_data: app.rio_data.voltage_1
+            time: app.rio_data.time
+            xlabel: 'Time (sec)'
+            ylabel: 'Y'
+            x_ticks_minor: 1
+            x_ticks_major: 1
+            y_ticks_major: 5
+            y_grid_label: True
+            x_grid_label: True
+            padding: 8
+            x_grid: True
+            y_grid: True
+            xmin: 0
+            xmax: 10
+            ymin: -15
+            ymax: 15
+            precision: '%.1f'
+
+        Button:
+            id: close_graph_popup
+            text: 'X'
+            size_hint: None, None
+            size: 35, 35
+            pos: graph_popup.width - close_graph_popup.width - 10, graph_popup.height - close_graph_popup.height - 8
+            text_size: self.size
+            font_size: '18sp'
+            halign: 'center'
+            valign: 'middle'
+            on_press: graph_popup.dismiss()
 
 <PumpData@Label>:
     font_size: '20sp'
