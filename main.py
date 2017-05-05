@@ -9,7 +9,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
-from kivy.properties import StringProperty, NumericProperty
+from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.config import Config
 from math import sin
 #from kivy.garden.graph import Graph, MeshLinePlot
@@ -27,10 +27,21 @@ debug_mode = 0
 
 class MainScreen(FloatLayout):
     logged_in = NumericProperty(0)
+    system_status = StringProperty('')
+    alarm_popup = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         #self.graph_popup = GraphPopup()
+
+    def on_system_status(self, instance, status):
+        if status == '3':
+            self.alarm_popup.open()
+        else:
+            try:
+                self.alarm_popup.dismiss()
+            except:
+                pass
 
     def on_touch_down(self, touch):
         #passcode pop-up if area of tab headers are touched (other than 'Main'), and not logged in
@@ -166,6 +177,7 @@ class RIOData(Widget):
     header_line_1 = StringProperty('0')
     header_line_2 = StringProperty('0')
     header_line_3 = StringProperty('0')
+    header_line_4 = StringProperty('0')
     power_supply = StringProperty('0')
     temp_1 = StringProperty('0')
     temp_2 = StringProperty('0')
@@ -183,10 +195,19 @@ class RIOData(Widget):
     pump_cmd_max = StringProperty('0')
     pump_cmd_inc = StringProperty('0')
     avg_pressure = StringProperty('0')
+    alarm_message_1 = StringProperty('0')
+    alarm_message_2 = StringProperty('0')
+    recording = StringProperty('0')
+    serial_number_1 = StringProperty('0')
+    serial_number_2 = StringProperty('0')
+    serial_number_3 = StringProperty('0')
+    serial_number_4 = StringProperty('0')
+    serial_number_5 = StringProperty('0')
+    serial_number_6 = StringProperty('0')
 
     def __init__(self, **kwargs):
         super(RIOData, self).__init__(**kwargs)
-        self.array_size = 75
+        self.array_size = 85
         self.pump_data_array = ['0']*self.array_size
         Clock.schedule_interval(self.update_data, 0)
 
@@ -194,6 +215,7 @@ class RIOData(Widget):
         if debug_mode == 0:
             try:
                 self.pump_data_array = ser.readline().rstrip().split(',')
+                #print(self.pump_data_array)
                 #self.time = Clock.get_time()
             except:
                 print('Serial Read Failure')
@@ -258,23 +280,33 @@ class RIOData(Widget):
             self.header_line_1 = self.pump_data_array[54]
             self.header_line_2 = self.pump_data_array[55]
             self.header_line_3 = self.pump_data_array[56]
-            self.power_supply = self.pump_data_array[57]
-            self.temp_1 = self.pump_data_array[58]
-            self.temp_2 = self.pump_data_array[59]
-            self.system_status = self.pump_data_array[60]
-            self.ps_cmd = self.pump_data_array[61]
-            self.pressure_cmd = self.pump_data_array[62]
-            self.temp_cmd_1 = self.pump_data_array[63]
-            self.temp_cmd_2 = self.pump_data_array[64]
-            self.ps_enable = self.pump_data_array[65]
-            self.tog_button_spare_1 = self.pump_data_array[66]
-            self.tog_button_spare_2 = self.pump_data_array[67]
-            self.tog_button_spare_3 = self.pump_data_array[68]
-            self.tog_button_spare_4 = self.pump_data_array[69]
-            self.tog_button_spare_5 = self.pump_data_array[70]
-            self.pump_cmd_max = self.pump_data_array[71]
-            self.pump_cmd_inc = self.pump_data_array[72]
-            self.avg_pressure = self.pump_data_array[73]
+            self.header_line_4 = self.pump_data_array[57]
+            self.power_supply = self.pump_data_array[58]
+            self.temp_1 = self.pump_data_array[59]
+            self.temp_2 = self.pump_data_array[60]
+            self.system_status = self.pump_data_array[61]
+            self.ps_cmd = self.pump_data_array[62]
+            self.pressure_cmd = self.pump_data_array[63]
+            self.temp_cmd_1 = self.pump_data_array[64]
+            self.temp_cmd_2 = self.pump_data_array[65]
+            self.ps_enable = self.pump_data_array[66]
+            self.tog_button_spare_1 = self.pump_data_array[67]
+            self.tog_button_spare_2 = self.pump_data_array[68]
+            self.tog_button_spare_3 = self.pump_data_array[69]
+            self.tog_button_spare_4 = self.pump_data_array[70]
+            self.tog_button_spare_5 = self.pump_data_array[71]
+            self.pump_cmd_max = self.pump_data_array[72]
+            self.pump_cmd_inc = self.pump_data_array[73]
+            self.avg_pressure = self.pump_data_array[74]
+            self.alarm_message_1 = self.pump_data_array[75]
+            self.alarm_message_2 = self.pump_data_array[76]
+            self.recording = self.pump_data_array[77]
+            self.serial_number_1 = self.pump_data_array[78]
+            self.serial_number_2 = self.pump_data_array[79]
+            self.serial_number_3 = self.pump_data_array[80]
+            self.serial_number_4 = self.pump_data_array[81]
+            self.serial_number_5 = self.pump_data_array[82]
+            self.serial_number_6 = self.pump_data_array[83]
 
     def get(self, index):
         return self.pump_data_array[index]

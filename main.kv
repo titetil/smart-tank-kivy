@@ -6,8 +6,10 @@
     logout_button: logout_button.__self__
     reset_timer_popup: reset_timer_popup.__self__
     fuel_change_popup: fuel_change_popup.__self__
+    alarm_popup: alarm_popup.__self__
     #graph_popup: graph_popup.__self__
     logged_in: app.logged_in
+    system_status: app.rio_data.system_status
 
     Button:
         id: logout_button
@@ -43,7 +45,6 @@
 
     TabbedPanel:
         id: main_tabbed_panel
-        size_hint: 1, 1
         do_default_tab: False
         on_children: main_tabbed_panel.switch_to(main)
 
@@ -57,7 +58,7 @@
                 spacing: 10
 
                 BoxLayout:
-                    size_hint: 1, .2
+                    size_hint: 1, .23
                     orientation: 'horizontal'
 
                     BoxLayout:
@@ -69,10 +70,15 @@
                             text: app.rio_data.header_line_2
                         HeaderLabel:
                             text: app.rio_data.header_line_3
+                        HeaderLabel:
+                            text: app.rio_data.header_line_4
 
                     BoxLayout:
                         orientation: 'vertical'
 
+                        HeaderLabel:
+                            text: app.rio_data.recording
+                            halign: 'right'
                         HeaderLabel:
                             text: 'Power Supply: ' + app.rio_data.power_supply
                             halign: 'right'
@@ -84,11 +90,11 @@
                             halign: 'right'
 
                 PumpStateLayout:
-                    size_hint: 1, .10
+                    size_hint: 1, .13
 
                 GridLayout:
                     id: pump_data_layout
-                    size_hint: 1, .70
+                    size_hint: 1, .65
                     cols: 6
                     rows: 7
                     PumpData:
@@ -269,13 +275,20 @@
                                 font_size: '18sp'
 
                             Button:
-                                text: 'Ok'
+                                text: 'OK'
                                 size_hint: 1, .2
                                 on_release: fuel_change_popup.dismiss(); app.rio_data.set('momentary_button/log_fuel_change/', 'Null')
 
                 BoxLayout:
 
-                BoxLayout:
+                RelativeLayout:
+
+                    Label:
+                        text: 'v1.2'
+                        pos_hint: {'center_x': 0.46, 'center_y': .03}
+                        text_size: self.size
+                        halign: 'right'
+                        valign: 'middle'
 
         TabbedPanelItem:
             text: 'Pump Ctrl'
@@ -480,6 +493,7 @@
 
     Popup:
         id: passcode_popup
+        auto_dismiss: False
         title: "Enter passcode"
         size_hint: None, None
         size: 400, 450
@@ -521,6 +535,39 @@
                 text: '0'
                 on_release: app.try_passcode(self.text)
 
+    Popup:
+        id: alarm_popup
+        title: "Alarm"
+        auto_dismiss: False
+        size_hint: None, None
+        size: 300, 300
+        background_color: 1, 0, 0, 1
+        on_parent: if self.parent == main_screen: self.parent.remove_widget(self)
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: app.rio_data.alarm_message_1
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+                size_hint: 1, .4
+                font_size: '18sp'
+
+            Label:
+                text: app.rio_data.alarm_message_2
+                text_size: self.size
+                halign: 'center'
+                valign: 'middle'
+                size_hint: 1, .4
+                font_size: '18sp'
+
+            Button:
+                text: 'OK'
+                size_hint: 1, .2
+                on_release: alarm_popup.dismiss(); app.rio_data.set('momentary_button/alarm_dismiss/', 'Null')
+
 
 <PumpData@Label>:
     font_size: '20sp'
@@ -536,6 +583,9 @@
 <PumpState@LabelB>:
     font_size: '18sp'
     markup: 'True'
+    text_size: self.size
+    halign: 'center'
+    valign: 'middle'
     #bcolor_on: 0.19, 0.64, 0.8, 1
     bcolor_on: 0.03, 0.55, 0.07, 1
     bcolor_off: 0.34, 0.34, 0.34, 1
@@ -595,21 +645,21 @@
 <PumpStateLayout@GridLayout>:
     rows: 1
     PumpState:
-        text: 'Pump 1'
+        text: 'Pump 1\nSN: ' + app.rio_data.serial_number_1
         bstate: app.rio_data.pump_state_1
     PumpState:
-        text: 'Pump 2'
+        text: 'Pump 2\nSN: ' + app.rio_data.serial_number_2
         bstate: app.rio_data.pump_state_2
     PumpState:
-        text: 'Pump 3'
+        text: 'Pump 3\nSN: ' + app.rio_data.serial_number_3
         bstate: app.rio_data.pump_state_3
     PumpState:
-        text: 'Pump 4'
+        text: 'Pump 4\nSN: ' + app.rio_data.serial_number_4
         bstate: app.rio_data.pump_state_4
     PumpState:
-        text: 'Pump 5'
+        text: 'Pump 5\nSN: ' + app.rio_data.serial_number_5
         bstate: app.rio_data.pump_state_5
     PumpState:
-        text: 'Pump 6'
+        text: 'Pump 6\nSN: ' + app.rio_data.serial_number_6
         bstate: app.rio_data.pump_state_6
 
