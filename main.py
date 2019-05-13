@@ -10,9 +10,14 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.config import Config
 from math import sin
 #from kivy.garden.graph import Graph, MeshLinePlot
+from kivy.uix.effectwidget import EffectWidget
+from kivy.uix.effectwidget import InvertEffect
+import random
+from gauge import Gauge
 
 from kivy.core.window import Window
 
@@ -25,14 +30,25 @@ import collections
 
 debug_mode = 0
 
-class MainScreen(FloatLayout):
+class MainScreen(Screen):
     logged_in = NumericProperty(0)
     system_status = StringProperty('')
     alarm_popup = ObjectProperty(None)
+    app_ref = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        #self.graph_popup = GraphPopup()
+        self.start_inactivity_clock()
+
+    def start_inactivity_clock(self):
+        try:
+            self.screen_inactive_event.cancel()
+        except:
+            pass
+        self.screen_inactive_event = Clock.schedule_once(self.sys_inactive, 30)
+
+    def sys_inactive(self, dt):
+        self.app_ref.screen_man.current = 'gauge_screen'
 
     def on_system_status(self, instance, status):
         if status == '3':
@@ -44,58 +60,35 @@ class MainScreen(FloatLayout):
                 pass
 
     def on_touch_down(self, touch):
+        self.start_inactivity_clock()
         #passcode pop-up if area of tab headers are touched (other than 'Main'), and not logged in
         if touch.pos[0] > 104 and touch.pos[0] < 401 and touch.pos[1] < 480 and touch.pos[1] > 441 and self.logged_in == 0:
             self.ids.passcode_popup.open()
         return super(MainScreen, self).on_touch_down(touch)
 
-    #def show_graph_popup(self):
-        #self.graph_popup = GraphPopup()
+class GaugeScreen(Screen):
+    app_ref = ObjectProperty(None)
 
-
-'''class PumpData(Label):
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos):
-            self.main_ref.graph_popup.title = self.description
-            self.graph.ylabel = self.text.split(' ')[1]
-            self.main_ref.graph_popup.open()
-        return super(PumpData, self).on_touch_down(touch)
+        self.app_ref.screen_man.current = 'main_screen'
+        self.app_ref.main_screen.start_inactivity_clock()
 
-class GraphPopup(Popup):
-    pass
+class ScreenManagement(ScreenManager):
+    app_ref = ObjectProperty(None)
 
-class TestGraph(Graph):
-    graph_data = StringProperty('0')
-    time = NumericProperty(0.0)
+    def __init__(self,**kwargs):
+        super (ScreenManagement,self).__init__(**kwargs)
+        self.transition = NoTransition()
 
-    def __init__(self, **kwargs):
-        super(TestGraph, self).__init__(**kwargs)
-        plot = MeshLinePlot(color=[1, 0, 0, 1])
-        self.add_plot(plot)
-        self.plot = plot
-        self.buffer_x = collections.deque(maxlen=100)
-        self.buffer_y = collections.deque(maxlen=100)
-
-    def on_time(self, instance, value):
-        self.buffer_x.append(float("{0:.1f}".format(value))) #this formatting removes jitter from the graph
-        self.buffer_y.append(float(self.graph_data.split(" ")[0]) * 10)
-        self.plot.points = [(self.buffer_x[i], self.buffer_y[i]) for i in range(len(self.buffer_x))]
-        self._xmin = self.buffer_x[0] + 0.05 #offsets remove jitter
-        self._xmax = self.buffer_x[len(self.buffer_x) - 1] - 0.05
-        if self._xmax != self._xmin:
-            self.xmin = self._xmin
-            self.xmax = self._xmax
-            self._ymin = min(self.buffer_y) - min(self.buffer_y)*0.1
-            self._ymax = max(self.buffer_y) * 1.1
-            if self._ymax != self._ymin:
-                self.ymin = self._ymin - 1
-                self.ymax = self._ymax + 1
-                self.y_ticks_major = (self.ymax - self.ymin) / 5'''
+    def on_touch_down(self, touch):
+        self.app_ref.main_screen.start_inactivity_clock()
+        return super(ScreenManagement, self).on_touch_down(touch)
 
 class MainApp(App):
     passcode = '1234'
     passcode_try = ''
     logged_in = NumericProperty(0)
+    main_screen_ref = ObjectProperty(None)
 
     def build(self):
         self.rio_data = RIOData()
@@ -104,18 +97,21 @@ class MainApp(App):
         except:
             print('kivy error')
             ser.close()'''
-        return MainScreen()
+        self.main_screen = MainScreen()
+        self.screen_man = ScreenManagement()
+        self.screen_man.current = 'main_screen'
+        return self.screen_man
 
     def try_passcode(self, number):
         self.passcode_try = self.passcode_try + number
         if len(self.passcode_try) == len(self.passcode):
             if self.passcode_try == self.passcode:
                 self.logged_in = 1
-                self.root.add_widget(self.root.ids.logout_button)
+                self.main_screen_ref.add_widget(self.main_screen_ref.ids.logout_button)
             else:
-                self.root.ids.main_tabbed_panel.switch_to(self.root.ids.main)
+                self.main_screen_ref.ids.main_tabbed_panel.switch_to(self.main_screen_ref.ids.main)
             self.passcode_try = ''
-            self.root.ids.passcode_popup.dismiss()
+            self.main_screen_ref.ids.passcode_popup.dismiss()
 
 
 class RIOData(Widget):
@@ -132,6 +128,12 @@ class RIOData(Widget):
     pressure_4 = StringProperty('0')
     pressure_5 = StringProperty('0')
     pressure_6 = StringProperty('0')
+    pressure_1_int = NumericProperty(0)
+    pressure_2_int = NumericProperty(0)
+    pressure_3_int = NumericProperty(0)
+    pressure_4_int = NumericProperty(0)
+    pressure_5_int = NumericProperty(0)
+    pressure_6_int = NumericProperty(0)
     flow_1 = StringProperty('0')
     flow_2 = StringProperty('0')
     flow_3 = StringProperty('0')
@@ -224,17 +226,25 @@ class RIOData(Widget):
             self.pump_data_array = ['0']*self.array_size
         if len(self.pump_data_array) == self.array_size:
             self.speed_1 = self.pump_data_array[0]
+            #self.speed_1 = str(random.random() * 100)
             self.speed_2 = self.pump_data_array[1]
             self.speed_3 = self.pump_data_array[2]
             self.speed_4 = self.pump_data_array[3]
             self.speed_5 = self.pump_data_array[4]
             self.speed_6 = self.pump_data_array[5]
             self.pressure_1 = self.pump_data_array[6]
+            #self.pressure_1 = str(random.random() * 5 + 650)
             self.pressure_2 = self.pump_data_array[7]
             self.pressure_3 = self.pump_data_array[8]
             self.pressure_4 = self.pump_data_array[9]
             self.pressure_5 = self.pump_data_array[10]
             self.pressure_6 = self.pump_data_array[11]
+            self.pressure_1_int = int(self.pressure_1.split(' ')[0])
+            self.pressure_2_int = int(self.pressure_2.split(' ')[0])
+            self.pressure_3_int = int(self.pressure_3.split(' ')[0])
+            self.pressure_4_int = int(self.pressure_4.split(' ')[0])
+            self.pressure_5_int = int(self.pressure_5.split(' ')[0])
+            self.pressure_6_int = int(self.pressure_6.split(' ')[0])
             self.flow_1 = self.pump_data_array[12]
             self.flow_2 = self.pump_data_array[13]
             self.flow_3 = self.pump_data_array[14]
@@ -322,7 +332,7 @@ if __name__ == '__main__':
 
     if debug_mode == 0:
         try:
-            #ser = serial.Serial('COM3', 115200)
+            #ser = serial.Serial('COM4', 115200)
             ser = serial.Serial('/dev/ttyUSB0', 115200)
         except:
             print "Failed to connect"

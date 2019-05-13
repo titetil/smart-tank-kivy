@@ -1,7 +1,32 @@
 #:kivy 1.9.1
 
+#:import Gauge gauge
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import get_hex_from_color kivy.utils.get_hex_from_color
+
+<ScreenManagement>:
+    screen_background_color: ''
+    app_ref: app
+    main_screen: main_screen
+
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('000000ff')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    MainScreen:
+        id: main_screen
+        name: 'main_screen'
+
+    GaugeScreen:
+        id: gauge_screen
+        name: 'gauge_screen'
+
 <MainScreen>:
     id: main_screen
+    app_ref: app
     passcode_popup: passcode_popup.__self__
     logout_button: logout_button.__self__
     reset_timer_popup: reset_timer_popup.__self__
@@ -10,6 +35,7 @@
     #graph_popup: graph_popup.__self__
     logged_in: app.logged_in
     system_status: app.rio_data.system_status
+    on_parent: app.main_screen_ref = self
 
     Button:
         id: logout_button
@@ -42,6 +68,16 @@
         pos: main_tabbed_panel.width - self.width - 2, main_tabbed_panel.height - self.height - 2
         font_size: '17sp'
         bstate: app.rio_data.system_status
+
+    Button:
+        id: gauge_button
+        size_hint: None, None
+        height: 30
+        width: 30
+        pos: 770,450
+        background_normal: ''
+        background_color: 0, 0, 0, 0
+        on_press: app.screen_man.current = 'gauge_screen'
 
     TabbedPanel:
         id: main_tabbed_panel
@@ -284,7 +320,7 @@
                 RelativeLayout:
 
                     Label:
-                        text: 'v1.2'
+                        text: 'v1.3'
                         pos_hint: {'center_x': 0.46, 'center_y': .03}
                         text_size: self.size
                         halign: 'right'
@@ -490,7 +526,6 @@
 
 
 
-
     Popup:
         id: passcode_popup
         auto_dismiss: False
@@ -568,6 +603,53 @@
                 size_hint: 1, .2
                 on_release: alarm_popup.dismiss(); app.rio_data.set('momentary_button/alarm_dismiss/', 'Null')
 
+<GaugeScreen>:
+    id: gauge_screen
+    app_ref: app
+
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#2b2b2eff')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        id: gauge_grid
+        rows: 2
+        cols: 3
+        spacing: 0
+        padding: 28, 0, 0, 5
+
+        Gauge:
+            id: gauge_1
+            gauge_pic: 'gauge_1.png'
+            value: app.rio_data.pressure_1_int
+
+        Gauge:
+            id: gauge_2
+            gauge_pic: 'gauge_2.png'
+            value: app.rio_data.pressure_2_int
+
+        Gauge:
+            id: gauge_3
+            gauge_pic: 'gauge_3.png'
+            value: app.rio_data.pressure_3_int
+
+        Gauge:
+            id: gauge_4
+            gauge_pic: 'gauge_4.png'
+            value: app.rio_data.pressure_4_int
+
+        Gauge:
+            id: gauge_5
+            gauge_pic: 'gauge_5.png'
+            value: app.rio_data.pressure_5_int
+
+        Gauge:
+            id: gauge_6
+            gauge_pic: 'gauge_6.png'
+            value: app.rio_data.pressure_6_int
 
 <PumpData@Label>:
     font_size: '20sp'
